@@ -21,7 +21,10 @@ class ChatApp(QWidget):
         funcs = [functions.leave, functions.get_news, functions.open_app]
         self.setWindowTitle("Gyani AI Assistant")
         with open("key.txt") as f:
-            genai.configure(api_key=f.read())
+            if f.read() != '': #Is there an API key?
+                genai.configure(api_key=f.read()) #If so, set that as the api key
+            else:
+                pass #if not, open up the setup page for a new Google API key
         self.model = genai.GenerativeModel("gemini-1.5-flash", tools=funcs, system_instruction=self.instructions)
         self.chat = self.model.start_chat(enable_automatic_function_calling=True)
         self.server = False #Is the pdf file stored in google's server or locally
