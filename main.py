@@ -20,7 +20,8 @@ class ChatApp(QWidget):
         self.instructions = "You are a helpful ai assistant called Gyani, who can assist the user in a number of ways beyond merely engaging in conversation."
         funcs = [functions.leave, functions.get_news, functions.open_app]
         self.setWindowTitle("Gyani AI Assistant")
-        genai.configure(api_key="AIzaSyBqYC_db8v_t6qrnR_Zn6ktJJD4ZUSbyDM")
+        with open("key.txt") as f:
+            genai.configure(api_key=f.read())
         self.model = genai.GenerativeModel("gemini-1.5-flash", tools=funcs, system_instruction=self.instructions)
         self.chat = self.model.start_chat(enable_automatic_function_calling=True)
         self.server = False #Is the pdf file stored in google's server or locally
