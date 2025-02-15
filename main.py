@@ -7,12 +7,8 @@ import functions
 import os
 from re import search
 import base64
-import io
-import httpx
 import pathlib
-import json
 
-ai.get_document("/Users/ishan/Desktop/Books/Anthony-IE-homeland.pdf")
 class ChatApp(QWidget):
     def __init__(self):
         super().__init__()
