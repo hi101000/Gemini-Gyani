@@ -27,3 +27,11 @@ def find_file_in_directories(target_name):
             matching_files.append(os.path.join(root, file))
 
   return matching_files
+
+def jaccard_distance(set1: set, set2: set) -> float:
+  # Symmetric difference of two sets
+  symmetric_difference = set1.symmetric_difference(set2)
+  # Unions of two sets
+  union = set1.union(set2)
+  # print(len(union), len(symmetric_difference))
+  return float(len(union)) / float(len(symmetric_difference))

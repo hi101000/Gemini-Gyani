@@ -1,32 +1,47 @@
+import re
+
 import requests
 from bs4 import BeautifulSoup
 import os
 import sys
 import webbrowser
-
+import newspaper
 import helpers
 
 
-def get_news(topic: str) -> list:
+def get_headlines(topic: str) -> dict:
     """Gives the user a list of headlines.
 
         Args:
             topic: the topic which a user specified (e.g. 'Ukraine situation')
 
         Returns:
-            A list containing headlines related to the user-specified topic.
+            A dictionary containing headlines related to the user-specified topic, as well as the source for each headline
         """
     url = f'https://apnews.com/search?q={topic}#nt=navsearch'
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
     titles = soup.find_all(class_="PagePromoContentIcons-text")
-    articles = []
+    articles = {}
     for title in titles:
-        articles.append(title.text)
+        articles[title.text]="AP"
+    url = f'https://www.reuters.com/site-search/?query={topic}'
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    titles = soup.find_all(class_="text__text__1FZLe text__inherit-color__3208F text__medium__1kbOh text__heading_6__1qUJ5 heading__base__2T28j heading__heading_6__RtD9P title__heading__s7Jan")
+    for title in titles:
+        articles[title.text]="Reuters"
+    buff = {}
+    for article in articles.keys():
+        if helpers.jaccard_distance(set(article.lower().split(" ")), set(topic.lower().split(" "))) > 0.5:
+            buff[article] = articles[article]
+    articles = buff
+    del buff
+
     return articles
 
 def open_app(name: str)->None:
-    """Opens a user-specified app
+    """Opens a user-specified app, such as Discord, Google Chrome, etc.
             Args:
                 name: the name of the app to open
             Returns:
@@ -46,3 +61,54 @@ def leave():
                 Nothing
             """
     sys.exit(0)
+
+def open_website(url: str)->str:
+    """Opens a user-specified website
+            Args:
+                url: the url of the website to open
+            Returns:
+                A String certifying that the page was opened
+    """
+    webbrowser.open(url)
+    return f"Successfully opened {url}"
+
+def get_news(topic: str) -> str:
+    """
+    Returns the text of news articles relating to the topic for the AI model to answer user questions about the news.
+    Args:
+        topic: the topic which a user specified (e.g. 'Ukraine situation', 'White House Press Conference')
+    Returns:
+        A string containing the text of some news articles from the AP and Reuters.
+    """
+    url = f'https://apnews.com/search?q={topic}#nt=navsearch'
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    titles = soup.find_all("a", class_="Link", href=True)
+    links = []
+    for titl in titles[:9]:
+        links.append(titl['href'])
+        print(titl['href'])
+    del titles
+    url = f'https://www.reuters.com/site-search/?query={topic}'
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    titles = soup.find_all("a", class_="text__text__1FZLe text__dark-grey__3Ml43 text__inherit-font__1Y8w3 text__inherit-size__1DZJi link__link__3Ji6W link__underline_on_hover__2zGL4", href=re.compile("^https://www.reuters.com/site-search/"))
+    for titl in titles[:9]:
+        links.append(titl['href'])
+        print(titl['href'])
+    del titles
+
+    text = []
+    for link in links:
+        article = newspaper.Article(link)
+        article.download()
+        article.parse()
+        if "The Associated Press is an independent global news organization" in article.text:
+            pass
+        else:
+            text.append(article.text)
+    print(text)
+    return " ".join(text)
+
+if __name__ == "__main__":
+    get_news("Zelenskyy")
