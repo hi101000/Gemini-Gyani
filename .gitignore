@@ -7,3 +7,6 @@ activate
 activate/
 production
 production/*
+*.iml
+*.bin
+*.plist
