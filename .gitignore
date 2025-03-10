@@ -5,3 +5,5 @@ main.bin
 .venv/*
 activate
 activate/
+production
+production/*
