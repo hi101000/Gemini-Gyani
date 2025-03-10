@@ -7,6 +7,7 @@ import sys
 import webbrowser
 import newspaper
 import helpers
+import wikipedia
 
 
 def get_headlines(topic: str) -> dict:
@@ -89,15 +90,18 @@ def get_news(topic: str) -> str:
         links.append(titl['href'])
         print(titl['href'])
     del titles
-    url = f'https://www.reuters.com/site-search/?query={topic}'
+    url = f'https://san.com/?s={topic}&post_type=sa_core_content'
     page = requests.get(url)
+    #print(page.content)
     soup = BeautifulSoup(page.content, 'html.parser')
-    titles = soup.find_all("a", class_="text__text__1FZLe text__dark-grey__3Ml43 text__inherit-font__1Y8w3 text__inherit-size__1DZJi link__link__3Ji6W link__underline_on_hover__2zGL4", href=re.compile("^https://www.reuters.com/site-search/"))
+    titles = soup.find_all("a", class_="search-result__image")
+    print(titles)
     for titl in titles[:9]:
         links.append(titl['href'])
         print(titl['href'])
     del titles
 
+    #text extraction
     text = []
     for link in links:
         article = newspaper.Article(link)
@@ -110,5 +114,17 @@ def get_news(topic: str) -> str:
     print(text)
     return " ".join(text)
 
+def wikipedia_summary(topic: str) -> str:
+    """Returns the summary of the Wikipedia article.
+            Args:
+                topic: the topic which a user specified (e.g. 'Abraham Lincoln')
+            Returns:
+                A short summary of the wikipedia article
+    """
+    return wikipedia.summary(topic, sentences=5)
+
+def summarize_webpage(url: str)->str:
+    pass
+
 if __name__ == "__main__":
-    get_news("Zelenskyy")
+    get_news("Gaza")
