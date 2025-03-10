@@ -3,3 +3,5 @@ key.txt
 main.bin
 .venv
 .venv/*
+activate
+activate/
