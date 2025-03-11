@@ -104,7 +104,7 @@ class ChatApp(QWidget):
         root = os.path.abspath('.').split(os.path.sep)[0]+os.path.sep
         path = QFileDialog.getOpenFileName(self, 'Open file', f'{root}', "Any File (*.*)")
         fname = path[0]
-        if search("(.pdf$|.jpg$|.jpeg$|.png$|.txt$)", fname) != None:
+        if search("(.pdf$|.jpg$|.jpeg$|.png$|.txt$|.py$|.java$|.c$|.cpp$|.go$|.sh$|.env$)", fname) != None:
             with open(fname, "rb") as f:
                 self.file = base64.standard_b64encode(f.read()).decode("utf-8")
         else:
@@ -113,7 +113,7 @@ class ChatApp(QWidget):
             media = pathlib.Path(__file__).parents[1] / "third_party"
             self.file = self.client.files.upload(file=fname)
             self.server = True
-        self.file_lbl.setText("Attached File: "+fname)
+            self.file_lbl.setText("Attached File: "+fname)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Enter or event.key() == Qt.Key.Key_Return:
