@@ -53,7 +53,7 @@ def open_app(name: str)->None:
             os.system(f"open {file}")
 
 def leave():
-    """Quits the application if the user requests it.
+    """Quits/closes the application if the user requests it.
             Args:
                 Nothing
 

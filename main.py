@@ -41,7 +41,7 @@ class ChatApp(QWidget):
 
         # Send button
         send_button = QPushButton("Send")
-        send_button.clicked.connect(self.send_message)
+        send_button.clicked.connect(lambda: self.send_message(""))
         layout.addWidget(send_button)
 
         self.file_lbl = QLabel("Attached File: ")
@@ -71,7 +71,7 @@ class ChatApp(QWidget):
                 if message:
                     self.message_display.append(f"You: {message}\n\n")
                     self.message_input.clear()
-                self.message_display.append(f"System: {self.chat.send_message(message).text}\n\n")
+                    self.message_display.append(f"System: {self.chat.send_message(message).text}\n\n")
             else:
                 import httpx
                 from google.genai import types
@@ -80,15 +80,15 @@ class ChatApp(QWidget):
                 if message:
                     self.message_display.append(f"You: {message}\n\n")
                     self.message_input.clear()
-                response = self.client.models.generate_content(
-                    model="gemini-1.5-flash",
-                    contents=[
-                        types.Part.from_bytes(
-                            data=doc_data,
-                            mime_type='application/pdf',
-                        ),
-                        message])
-                self.message_display.append(f"System: {response.text}\n\n")
+                    response = self.client.models.generate_content(
+                        model="gemini-1.5-flash",
+                        contents=[
+                            types.Part.from_bytes(
+                                data=doc_data,
+                                mime_type='application/pdf',
+                            ),
+                            message])
+                    self.message_display.append(f"System: {response.text}\n\n")
         else:
             if message:
                 self.message_display.append(f"You: {message}\n\n")
