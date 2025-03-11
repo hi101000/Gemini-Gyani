@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -17,7 +16,8 @@ import java.net.URISyntaxException;
  Ideas:
     1. Probably need other Java classes for compiling and what not
     2. Maybe package and ship the installer as a JAR?
-    3.
+    3.Maybe have the installer just install python rather than compiling the python to a binary?
+    4. Could this whole thing be programmed in Godot? That would make cross-platform deployment easier
  */
 
 public class Installer extends JFrame{
@@ -59,18 +59,16 @@ public class Installer extends JFrame{
         });
 
         JButton submit = new JButton("Submit Key");
-        submit.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e){
-                try{
-                    key = JOptionPane.showInputDialog("Enter the key: ");
-                    if(!key.isEmpty()){
-                        setKey(key);
-                    }else{
-                        JOptionPane.showMessageDialog(null, "Invalid key");
-                    }
-                }catch(Exception ex){
+        submit.addActionListener(e -> {
+            try{
+                key = JOptionPane.showInputDialog("Enter the key: ");
+                if(!key.isEmpty()){
+                    setKey(key);
+                }else{
                     JOptionPane.showMessageDialog(null, "Invalid key");
                 }
+            }catch(Exception ex){
+                JOptionPane.showMessageDialog(null, "Invalid key");
             }
         });
         add(inst);
@@ -79,7 +77,7 @@ public class Installer extends JFrame{
         setVisible(true);
     }
     public void setKey(String key) {
-        if (System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0 || System.getProperty("os.name").toLowerCase().indexOf("nux") >= 0 || System.getProperty("os.name").toLowerCase().indexOf("aix") >= 0 || System.getProperty("os.name").toLowerCase().indexOf("nix") >= 0) {
+        if (System.getProperty("os.name").toLowerCase().contains("mac") || System.getProperty("os.name").toLowerCase().contains("nux") || System.getProperty("os.name").toLowerCase().contains("aix") || System.getProperty("os.name").toLowerCase().contains("nix")) {
             final String fileName = System.getProperty("user.home") + "/.bashrc";
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
                 writer.write("\nexport API_KEY=" + key);
@@ -87,9 +85,36 @@ public class Installer extends JFrame{
             } catch (IOException e) {
                 System.err.println("An error occurred while appending to the file: " + e.getMessage());
             }
-        } else if (System.getProperty("os.name").toLowerCase().indexOf("win")>=0) {
-            String cmd="setx API_KEY " + key;
-            Runtime.getRuntime().exec(cmd);
+        } else if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            //String cmd="setx API_KEY " + key;
+            //Runtime.getRuntime().exec(cmd);
+            try {
+                ProcessBuilder pb = new ProcessBuilder("setx", "API_KEY", key);
+                pb.directory(new File(System.getProperty("user.home")));
+                Process process = pb.start();
+
+                StringBuilder output = new StringBuilder();
+                BufferedReader reader
+                        = new BufferedReader(new InputStreamReader(
+                        process.getInputStream()));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line);
+                    output.append("\n");
+                }
+
+                int exitVal = process.waitFor();
+                if (exitVal == 0) {
+                    System.out.println(
+                            "**************************** The Output is ******************************");
+                    System.out.println(output);
+                    System.exit(0);
+                }
+            }
+            catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
     public static void main(String[] args){
