@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
  Ideas:
     1. Probably need other Java classes for compiling and what not
     2. Maybe package and ship the installer as a JAR?
+    3.
  */
 
 public class Installer extends JFrame{

@@ -1,5 +1,3 @@
-import re
-
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -8,6 +6,7 @@ import webbrowser
 import newspaper
 import helpers
 import wikipedia
+import re
 
 
 def get_headlines(topic: str) -> dict:

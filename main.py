@@ -1,17 +1,13 @@
 from google import genai
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QTextEdit, QPushButton, QFileDialog, QLabel
-from PySide6.QtGui import QKeyEvent
 from PySide6.QtCore import Qt
 import functions
 import os
 from re import search
 import base64
 import pathlib
-#from dotenv import load_dotenv
 import sys
 import listener
-
-#load_dotenv()
 
 class ChatApp(QWidget):
     def __init__(self):
