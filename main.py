@@ -9,6 +9,7 @@ import base64
 import pathlib
 #from dotenv import load_dotenv
 import sys
+import listener
 
 #load_dotenv()
 
@@ -57,10 +58,18 @@ class ChatApp(QWidget):
         self.file_input = QLineEdit()
         layout.addWidget(self.file_input)
 
+        self.audio_btn = QPushButton("record audio")
+        self.listener = listener.Listener()
+        self.audio_btn.clicked.connect(lambda: self.send_message(self.listener.listen()))
+        layout.addWidget(self.audio_btn)
+
         self.setLayout(layout)
 
-    def send_message(self):
-        message = self.message_input.text()
+    def send_message(self, prompt = ""):
+        if prompt == "":
+            message = self.message_input.text()
+        else:
+            message = prompt
         if self.file == None:
             if self.file_input.text() == "":
                 if message:

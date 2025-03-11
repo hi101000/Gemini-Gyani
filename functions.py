@@ -123,8 +123,8 @@ def wikipedia_summary(topic: str) -> str:
     """
     return wikipedia.summary(topic, sentences=5)
 
-def summarize_webpage(url: str)->str:
-    pass
+
+
 
 if __name__ == "__main__":
     get_news("Gaza")

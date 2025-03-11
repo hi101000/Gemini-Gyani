@@ -6,6 +6,19 @@ import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/**
+ TODO:
+    1. Have it compile the program into a binary
+    2. Have it move files to pertinent places
+    3. Have it exit
+ Capabilities so far:
+    1. Gets user to set up their own api key
+    2. Sets the API key as an environment variable
+ Ideas:
+    1. Probably need other Java classes for compiling and what not
+    2. Maybe package and ship the installer as a JAR?
+ */
+
 public class Installer extends JFrame{
     private static String key;
     public final String TEXT = "Set Up Your API Key Here";

@@ -1,5 +1,10 @@
 import os
 
+'''
+TODO:
+  1. Make find_file_in_directories work with Linux and Windows as well as Mac
+'''
+
 def find_file_in_directories(target_name):
   """
   Searches for applications with the given name in specific directories.

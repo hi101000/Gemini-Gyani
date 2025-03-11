@@ -10,3 +10,4 @@ production/*
 *.iml
 *.bin
 *.plist
+*.pdf
