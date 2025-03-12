@@ -7,6 +7,7 @@ import newspaper
 import helpers
 import wikipedia
 import re
+import subprocess
 
 
 def get_headlines(topic: str) -> dict:
@@ -40,17 +41,29 @@ def get_headlines(topic: str) -> dict:
 
     return articles
 
-def open_app(name: str)->None:
+def open_app(name: str)->str:
     """Opens a user-specified app, such as Discord, Google Chrome, etc.
             Args:
                 name: the name of the app to open
             Returns:
-                Nothing
+                A string which either certifies that the app was opened or explaining any errors which occurred
     """
-    files = helpers.find_file_in_directories(name)
-    for file in files:
-        if sys.platform == 'darwin':
+
+    if sys.platform == 'darwin':
+        files = helpers.find_file_in_directories(name)
+        for file in files:
             os.system(f"open {file}")
+        return "successfully opened the app"
+    elif sys.platform == 'win32':
+        try:
+            subprocess.Popen(f"{name}.exe")
+        except FileNotFoundError:
+            return "No such file exists"
+        except Exception as e:
+            return f"Error: {e}"
+    elif sys.platform == 'linux2':
+        pass
+
 
 def leave():
     """Quits/closes the application if the user requests it.
