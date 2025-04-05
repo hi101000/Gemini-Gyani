@@ -29,10 +29,30 @@ def find_file_in_directories(target_name):
       for root, dirs, files in os.walk(directory):
         for file in dirs:
           # Case-insensitive search with option for case-sensitive matching
-          if file.lower() == target_name.lower() or file == target_name:
+          if file.lower() == target_name.lower():
             matching_files.append(os.path.join(root, file))
 
   return matching_files
+
+import subprocess
+import os
+
+
+def run_application_linux_with_path(app_path):
+    """
+    Runs an application using its full file path.
+    Args:
+        app_path: The full file path of the application.
+    """
+    try:
+        subprocess.Popen(app_path)
+        print(f"Successfully started {app_path}")
+    except FileNotFoundError:
+        print(f"Error: Application '{app_path}' not found.")
+    except PermissionError:
+        print(f"Error: Permission denied to execute '{app_path}'.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def jaccard_distance(set1: set, set2: set) -> float:
   # Symmetric difference of two sets

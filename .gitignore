@@ -12,3 +12,5 @@ production/*
 *.plist
 *.pdf
 *.png
+build/
+dist/

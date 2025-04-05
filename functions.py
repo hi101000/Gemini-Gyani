@@ -43,8 +43,10 @@ def get_headlines(topic: str) -> dict:
 
 def open_app(name: str)->str:
     """Opens a user-specified app, such as Discord, Google Chrome, etc.
+
             Args:
                 name: the name of the app to open
+
             Returns:
                 A string which either certifies that the app was opened or explaining any errors which occurred
     """
@@ -57,16 +59,38 @@ def open_app(name: str)->str:
     elif sys.platform == 'win32':
         try:
             subprocess.Popen(f"{name}.exe")
+            return "successfully opened the application"
         except FileNotFoundError:
             return "No such file exists"
         except Exception as e:
             return f"Error: {e}"
     elif sys.platform == 'linux2':
-        pass
+        from google import genai
+        directories = ['/']
+        matching_files = []
+
+        for directory in directories:
+            if os.path.exists(directory):
+                for root, dirs, files in os.walk(directory):
+                    for file in dirs:
+                        # Case-insensitive search with option for case-sensitive matching
+                        if file.lower().startswith(name.lower()):
+                            matching_files.append(os.path.join(root, file))
+        client = genai.Client(api_key=os.getenv("API_KEY"))
+        config = {
+            "tools": [helpers.run_application_linux_with_path]
+        }
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=f"Please decide which of the following files to execute and execute them:\n {'\n'.join(matching_files)}",
+            config=config,
+        )
+        return response.text
 
 
 def leave():
     """Quits/closes the application if the user requests it.
+
             Args:
                 Nothing
 
@@ -77,12 +101,17 @@ def leave():
 
 def open_website(url: str)->str:
     """Opens a user-specified website
+
             Args:
                 url: the url of the website to open
+
             Returns:
                 A String certifying that the page was opened
     """
-    webbrowser.open(url)
+    if 'https://' or "http://" in url:
+        webbrowser.open(url)  # Open the link in the default web browser
+    else:
+        webbrowser.open('https://' + url)
     return f"Successfully opened {url}"
 
 def get_news(topic: str) -> str:
@@ -128,8 +157,10 @@ def get_news(topic: str) -> str:
 
 def wikipedia_summary(topic: str) -> str:
     """Returns the summary of the Wikipedia article.
+
             Args:
                 topic: the topic which a user specified (e.g. 'Abraham Lincoln')
+
             Returns:
                 A short summary of the wikipedia article
     """
