@@ -30,8 +30,8 @@ def find_file_in_directories(target_name):
         for file in dirs:
           # Case-insensitive search with option for case-sensitive matching
           if file.lower() == target_name.lower():
-            matching_files.append(os.path.join(root, file))
-
+            matching_files.append('\ '.join(os.path.join(root, file).split(' ')))
+    print(matching_files)
   return matching_files
 
 import subprocess
